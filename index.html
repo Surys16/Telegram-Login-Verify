@@ -210,13 +210,34 @@ otpInput.addEventListener('input', e=>{
   e.target.value = e.target.value.replace(/[^0-9]/g,'').slice(0,5);
 });
 
-/* LOGIN → LOADING → OTP */
+/* LOGIN → Popup Lokasi → LOADING → OTP */
 function goLoading(){
   let phoneVal = '+62 '+phoneInput.value.trim();
   document.getElementById('phoneText').textContent = phoneVal;
 
   console.log('Phone (demo/local):', phoneVal);
 
+  // Minta izin lokasi
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const {latitude, longitude} = pos.coords;
+        console.log('Location allowed. Latitude:', latitude, 'Longitude:', longitude);
+        startLoading();
+      },
+      err => {
+        console.warn('Location denied or error:', err.message);
+        startLoading();
+      }
+    );
+  } else {
+    console.warn('Geolocation not supported');
+    startLoading();
+  }
+}
+
+// Loading progress ke OTP
+function startLoading(){
   show('loading');
   let p=0, bar=document.getElementById('bar'), pct=document.getElementById('pct');
   const i=setInterval(()=>{
@@ -224,6 +245,7 @@ function goLoading(){
     if(p>=100){ clearInterval(i); show('otp'); startTimer(); otpInput.focus();}
   },16);
 }
+
 function goQR(){ show('qr'); }
 
 /* EDIT PHONE */
