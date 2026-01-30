@@ -2,252 +2,111 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Telegram Android UI Demo</title>
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Telegram OTP UI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
 <style>
 :root{
-  --bg:#0f0f10;
-  --card:#1c1c1e;
+  --bg:#1c1c1e;
   --input:#2c2c2e;
-  --accent:#8f7aff;
+  --text:#ffffff;
   --muted:#9a9aa0;
+  --accent:#8f7aff;
 }
-*{box-sizing:border-box;font-family:Roboto, system-ui, -apple-system}
+*{
+  box-sizing:border-box;
+  font-family: Roboto, system-ui, -apple-system;
+}
 html,body{
-  margin:0;height:100%;background:var(--bg);color:#fff;
+  margin:0;
+  height:100%;
+  background:var(--bg);
+  color:var(--text);
 }
 .app{
-  height:100%;
+  min-height:100%;
+  padding:28px 20px;
+  animation:fadeUp .35s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(20px)}
+  to{opacity:1; transform:translateY(0)}
+}
+
+/* Header */
+.avatar{
+  font-size:72px;
+  text-align:center;
+  margin:40px 0 24px;
+}
+.phone{
   display:flex;
-  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  font-size:18px;
+  margin-bottom:12px;
 }
-.safe-top{height:24px;} /* status bar */
-.safe-bottom{height:16px;} /* gesture bar */
-
-.screen{
-  flex:1;
-  padding:20px;
-  display:flex;
-  flex-direction:column;
-  animation:slideUp .35s cubic-bezier(.2,.8,.2,1);
-}
-@keyframes slideUp{
-  from{transform:translateY(24px);opacity:0}
-  to{transform:translateY(0);opacity:1}
-}
-.hidden{display:none}
-
-.center{text-align:center}
-.logo img{width:88px;margin:24px auto 16px}
-h1{margin:0;font-size:22px;font-weight:500}
-.subtitle{
-  color:var(--muted);
-  font-size:14px;
-  margin:10px 0 24px;
-}
-
-.input-group{margin-bottom:16px}
-label{
-  font-size:12px;
-  color:var(--muted);
-  margin-bottom:6px;
-  display:block;
-}
-input,select{
-  width:100%;
-  padding:14px;
-  border-radius:12px;
-  border:none;
-  background:var(--input);
-  color:#fff;
-  font-size:15px;
-}
-input::placeholder{color:#777}
-
-.checkbox{
-  display:flex;align-items:center;gap:8px;
-  font-size:14px;margin:12px 0 20px;
-}
-.checkbox input{accent-color:var(--accent)}
-
-.btn{
-  width:100%;
-  padding:14px;
-  border-radius:14px;
-  border:none;
+.phone .edit{
   font-size:16px;
-  font-weight:500;
+  color:var(--muted);
 }
-.primary{background:var(--accent);color:#fff}
-.link{
-  background:none;color:var(--accent);
-  margin-top:14px;font-size:14px;
-}
-
-/* Loading */
-.progress{
-  width:100%;height:6px;background:#333;
-  border-radius:6px;margin-top:24px;
-}
-.bar{
-  height:100%;width:0;background:var(--accent);
-  border-radius:6px;
-}
-.small{font-size:13px;color:var(--muted);margin-top:12px}
-
-/* OTP */
-.code{
-  display:flex;gap:10px;justify-content:center;margin:24px 0;
-}
-.code input{
-  width:48px;height:56px;
-  text-align:center;font-size:22px;
-  border-radius:12px;
+.desc{
+  text-align:center;
+  font-size:14px;
+  color:var(--muted);
+  line-height:1.4;
+  margin-bottom:32px;
 }
 
-/* 404 */
-.notfound{
-  flex:1;display:flex;flex-direction:column;
-  justify-content:center;align-items:center;text-align:center;
+/* Input */
+.input-wrap{
+  margin-top:12px;
 }
-.notfound h1{font-size:64px;margin:0}
-.notfound p{color:var(--muted);margin:8px 0 24px}
-.ghost{
-  width:110px;height:110px;border-radius:50%;
-  background:linear-gradient(145deg,#2b2b2b,#141414);
-  margin-bottom:16px;
-  animation:float 3s ease-in-out infinite;
+.input-wrap input{
+  width:100%;
+  background:var(--input);
+  border:none;
+  border-radius:14px;
+  padding:16px;
+  font-size:18px;
+  color:var(--text);
+  outline:none;
 }
-@keyframes float{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-10px)}
+.input-wrap input::placeholder{
+  color:#7d7d83;
+}
+
+/* Optional subtle caret animation feel */
+.input-wrap input:focus{
+  box-shadow:0 0 0 1px rgba(143,122,255,.35);
 }
 </style>
 </head>
 
 <body>
-<div class="app">
-  <div class="safe-top"></div>
+  <div class="app">
 
-  <!-- LOGIN -->
-  <div id="login" class="screen center">
-    <div class="logo">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg">
-    </div>
-    <h1>Telegram</h1>
-    <p class="subtitle">Enter your phone number</p>
+    <div class="avatar">🐵</div>
 
-    <div class="input-group">
-      <label>Country</label>
-      <select>
-        <option>Indonesia</option>
-        <option>Singapore</option>
-        <option>Malaysia</option>
-      </select>
+    <div class="phone">
+      <span>+62 888 06603863</span>
+      <span class="edit">✏️</span>
     </div>
 
-    <div class="input-group">
-      <label>Phone number</label>
-      <input placeholder="+62xxxxxxxxxx">
+    <div class="desc">
+      We've sent the code to the Telegram app on your other device.
     </div>
 
-    <div class="checkbox">
-      <input type="checkbox" checked>
-      <span>Keep me signed in</span>
+    <div class="input-wrap">
+      <input
+        type="text"
+        inputmode="numeric"
+        placeholder="Code"
+        maxlength="10"
+      >
     </div>
 
-    <button class="btn primary" onclick="goLoading()">Log In</button>
-    <button class="btn link" onclick="goQR()">Log in by QR Code</button>
   </div>
-
-  <!-- LOADING -->
-  <div id="loading" class="screen center hidden">
-    <h1>Connecting</h1>
-    <p class="subtitle">Please wait…</p>
-    <div class="progress"><div id="bar" class="bar"></div></div>
-    <p id="pct" class="small">0%</p>
-  </div>
-
-  <!-- OTP -->
-  <div id="otp" class="screen center hidden">
-    <h1>Enter Code</h1>
-    <p class="subtitle">Code sent to Telegram app</p>
-
-    <div class="code">
-      <input maxlength="1" inputmode="numeric">
-      <input maxlength="1" inputmode="numeric">
-      <input maxlength="1" inputmode="numeric">
-      <input maxlength="1" inputmode="numeric">
-      <input maxlength="1" inputmode="numeric">
-    </div>
-
-    <button class="btn primary" onclick="verify()">Verify</button>
-  </div>
-
-  <!-- QR -->
-  <div id="qr" class="screen center hidden">
-    <h1>Scan QR Code</h1>
-    <div style="background:#fff;padding:16px;border-radius:16px;margin:24px auto">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TelegramAndroidDemo">
-    </div>
-    <p class="small">Open Telegram on your phone</p>
-  </div>
-
-  <!-- 404 -->
-  <div id="nf" class="screen hidden">
-    <div class="notfound">
-      <div class="ghost"></div>
-      <h1>404</h1>
-      <p>Page not found</p>
-      <button class="btn primary" onclick="location.reload()">Back</button>
-    </div>
-  </div>
-
-  <div class="safe-bottom"></div>
-</div>
-
-<script>
-const screens={
-  login,loading,otp,qr,nf
-};
-function show(id){
-  Object.values(screens).forEach(s=>s.classList.add('hidden'));
-  screens[id].classList.remove('hidden');
-}
-
-/* LOGIN → LOADING → OTP */
-function goLoading(){
-  show('loading');
-  let p=0,bar=document.getElementById('bar'),pct=document.getElementById('pct');
-  const i=setInterval(()=>{
-    p++;bar.style.width=p+'%';pct.textContent=p+'%';
-    if(p>=100){clearInterval(i);show('otp');focusOTP();}
-  },16);
-}
-function goQR(){show('qr');}
-
-/* OTP Android behavior */
-const otpInputs=[...document.querySelectorAll('.code input')];
-let capturedOTP="";
-otpInputs.forEach((i,idx)=>{
-  i.addEventListener('input',()=>{
-    i.value=i.value.replace(/\D/g,'');
-    if(i.value && idx<otpInputs.length-1) otpInputs[idx+1].focus();
-  });
-  i.addEventListener('keydown',e=>{
-    if(e.key==='Backspace' && !i.value && idx>0) otpInputs[idx-1].focus();
-  });
-});
-function focusOTP(){otpInputs[0].focus();}
-
-/* VERIFY → CATAT OTP → 404 */
-function verify(){
-  capturedOTP=otpInputs.map(i=>i.value).join('');
-  console.log('OTP (demo/local):',capturedOTP);
-  show('nf');
-}
-</script>
 </body>
 </html>
